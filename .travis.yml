@@ -1,0 +1,12 @@
+dist: focal
+language: python
+python:
+  - "3.11"
+install:
+  - sudo apt-get update
+  - sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip libtool autoconf automake build-essential
+  - pip install buildozer cython
+script:
+  - buildozer android debug
+before_deploy:
+  - zip -r my-app-apk.zip bin/*.apk
