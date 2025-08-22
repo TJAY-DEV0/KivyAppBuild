@@ -41,16 +41,10 @@ jobs:
 
       - name: Build the APK
         run: |
-          # Use `ls` to confirm the directory structure.
-          ls -R
-          # Change to the correct directory to run buildozer.
-          cd KivyAppBuild
-          # Run the build.
           buildozer android debug
-      
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
-          # The path must be relative to the root of the repository.
-          path: KivyAppBuild/bin/*.apk
+          path: bin/*.apk
