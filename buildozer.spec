@@ -792,7 +792,6 @@ ios.codesign.allowed = false
 #ios.manifest.full_size_image_url =
 
 
-[buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
