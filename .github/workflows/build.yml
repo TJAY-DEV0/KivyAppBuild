@@ -36,7 +36,7 @@ jobs:
 
       - name: Build the APK
         run: buildozer android debug
-        working-directory: KivyAppBuild
+        working-directory: 
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
