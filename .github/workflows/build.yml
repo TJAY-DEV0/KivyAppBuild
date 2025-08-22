@@ -29,6 +29,11 @@ jobs:
           sed -i 's/#p4a.branch = master/p4a.branch = develop/g' buildozer.spec
           sed -i 's/p4a.branch = main/p4a.branch = develop/g' buildozer.spec
 
+      - name: Clean zlib recipe
+        run: |
+          buildozer android clean --recipe zlib
+
+
       - name: Build the APK
         run: buildozer android debug
         working-directory: .
