@@ -4,45 +4,43 @@ on:
   push:
     branches:
       - main
-  # You can trigger the workflow manually from the GitHub UI with this.
   workflow_dispatch:
 
 jobs:
   build:
-    # Use a specific Ubuntu version for consistency.
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python and Java 17
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
+      
       - name: Install Buildozer and Dependencies
         run: |
           sudo apt-get update
-          # Install only the necessary system dependencies.
           sudo apt-get install -y git openjdk-17-jdk zlib1g-dev unzip
-          # Install buildozer and cython in one go.
           pip install --upgrade pip
           pip install buildozer cython
 
-      # This is the new step you need to add to fix autoconf issues.
-      - name: Set p4a branch
+      - name: Fix p4a branch and settings
         run: |
           sed -i 's/#p4a.branch = master/p4a.branch = develop/g' buildozer.spec
           sed -i 's/p4a.branch = main/p4a.branch = develop/g' buildozer.spec
-          # Set the build tool version to a known good one to fix the `Aidl not found` issue.
-          sed -i 's/#android.build_tools_version =.*/android.build_tools_version = 33.0.0/g' buildozer.spec
-          # Accept the SDK licenses to fix the `license not accepted` issue.
+          sed -i 's/#android.build_tools_version =.*/android.build_tools_version = 34.0.0/g' buildozer.spec
           sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
+          sed -i 's/#android.api = 31/android.api = 33/g' buildozer.spec
 
       - name: Build the APK
         run: |
-          buildozer android debug
-
+          # Set JAVA_HOME explicitly
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+          export JAVA_HOME=$JAVA_HOME_17_X64
+          # Run buildozer with increased verbosity to see the Gradle error
+          buildozer -v android debug
+      
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
