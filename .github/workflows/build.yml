@@ -24,6 +24,11 @@ jobs:
           pip install buildozer
           pip install cython
 
+      - name: Set p4a branch
+        run: |
+          sed -i 's/#p4a.branch = master/p4a.branch = develop/g' buildozer.spec
+          sed -i 's/p4a.branch = main/p4a.branch = develop/g' buildozer.spec
+
       - name: Build the APK
         run: buildozer android debug
         working-directory: .
