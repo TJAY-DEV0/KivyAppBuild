@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+  # You can trigger the workflow manually from the GitHub UI with this.
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Use a specific Ubuntu version for consistency.
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -20,26 +23,34 @@ jobs:
       - name: Install Buildozer and Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip libtool autoconf automake build-essential
-          pip install buildozer
-          pip install cython
+          # Install only the necessary system dependencies.
+          sudo apt-get install -y git openjdk-17-jdk zlib1g-dev unzip
+          # Install buildozer and cython in one go.
+          pip install --upgrade pip
+          pip install buildozer cython
 
+      # This is the new step you need to add to fix autoconf issues.
       - name: Set p4a branch
         run: |
           sed -i 's/#p4a.branch = master/p4a.branch = develop/g' buildozer.spec
           sed -i 's/p4a.branch = main/p4a.branch = develop/g' buildozer.spec
-
-      - name: Clean zlib recipe
-        run: |
-          buildozer android clean --recipe zlib
+          # Set the build tool version to a known good one to fix the `Aidl not found` issue.
+          sed -i 's/#android.build_tools_version =.*/android.build_tools_version = 33.0.0/g' buildozer.spec
+          # Accept the SDK licenses to fix the `license not accepted` issue.
+          sed -i 's/#android.accept_sdk_license = False/android.accept_sdk_license = True/g' buildozer.spec
 
       - name: Build the APK
         run: |
+          # Use `ls` to confirm the directory structure.
+          ls -R
+          # Change to the correct directory to run buildozer.
           cd KivyAppBuild
+          # Run the build.
           buildozer android debug
-
+      
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
-          path: bin/*.apk
+          # The path must be relative to the root of the repository.
+          path: KivyAppBuild/bin/*.apk
