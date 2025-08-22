@@ -29,3 +29,6 @@
             with:
               name: kivy-apk
               path: .github/workflows/bin/*.apk
+        defaults:
+          run:
+            working-directory: .
