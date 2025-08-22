@@ -23,7 +23,7 @@
             uses: ArtemSBulgakov/buildozer-action@v1
             id: buildozer
             with:
-              repository_root: .github/workflows/
+              repository_root: .
           - name: Upload Artifact
             uses: actions/upload-artifact@v2
             with:
