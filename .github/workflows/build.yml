@@ -33,10 +33,10 @@ jobs:
         run: |
           buildozer android clean --recipe zlib
 
-
       - name: Build the APK
-        run: buildozer android debug
-        working-directory: KivyAppBuild
+        run: |
+          cd KivyAppBuild
+          buildozer android debug
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
